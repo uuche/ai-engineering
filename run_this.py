@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-#Importing Packages
-# WHole code descripon
-# in this code , we are using covid-19 data set, by using this data set we are visualizing confirmed cases, deaths,active case all over the world. So writing code
-#we can make analyis on give data to check what is happening all over the world . If we look at data set using our code, we can see US has more corona cases ,which is top country
-#So we have a task to predict/forecast future corona cases, so we can make startegy to fight against this disease . Forecasting helps us to understand , that what will be happened
-# in future .so we can prepare our self.So bu using keras LSTm deep learning model,we are forecasting future cases .
+# I am using covid-19 data set, by using this data set I am visualizing confirmed cases, deaths, active case all over the world.
+# I can make analyis on given data to check what is happening all over the world. If we look at data set using the below code, 
+# we can see US has more corona cases, which makes it the top country.
+# So we have a task to predict/forecast future corona cases, so we can make a strategy to fight against this disease. 
+# Forecasting helps us to understand what will be happened in the future.
+# so we can prepare. So by using keras LSTm deep learning model, we are forecasting future cases .
 
 import numpy as np
 import pandas as pd
@@ -22,34 +21,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import warnings
 
-
-# In[3]:
-
-
 train = pd.DataFrame(pd.read_csv("train.csv"))
-
-
-# In[4]:
-
 
 print("The shape of training data is = {}".format(train.shape))
 
-
-# In[5]:
 
 # fillna used to replace /fill the missing cells in columns
 train.Province_State.fillna("", inplace = True)
 train.ConfirmedCases.fillna("", inplace = True)
 train.Fatalities.fillna("", inplace = True)
 
-
-# In[6]:
-
-
 train["Country_Region"].unique()
-
-
-# In[7]:
 
 
 confirmed_cases_us = train[train["Country_Region"] == "US"].groupby(["Date"]).ConfirmedCases.sum()
@@ -76,9 +58,6 @@ fatal_cases_uk = train[train["Country_Region"] == "United Kingdom"].groupby(["Da
 date = train["Date"].unique()
 
 
-# In[8]:
-
-
 plt.figure(figsize = (12,8))
 plt.plot(date, confirmed_cases_us, color = "b", label = "US")
 plt.plot(date, confirmed_cases_italy, color = "g", label = "Italy")
@@ -92,10 +71,6 @@ plt.title("A comparitive study of confirmed cases across the globe")
 plt.legend()
 
 plt.plot()
-
-
-# In[9]:
-
 
 plt.figure(figsize = (12, 8))
 plt.plot(date, fatal_cases_us, color = "b", label = "US")
@@ -112,21 +87,11 @@ plt.legend()
 plt.plot()
 
 
-# In[10]:
-
 
 train["Region"] = train["Country_Region"].astype(str) + train["Province_State"].astype(str)
 train.drop(["Country_Region" , "Province_State"], axis = 1, inplace = True)
 
-
-# In[11]:
-
-
 train.head()
-
-
-# In[12]:
-
 
 choro_map = px.choropleth(train, locations = "Region", locationmode = "country names", color = "ConfirmedCases",
                                         hover_name = "Region", animation_frame = "Date")
@@ -134,38 +99,19 @@ choro_map.update_layout(title_text = "Global Confirmed Cases", title_x = 0.5,
                          geo = dict(showframe = False, showcoastlines = True))
 choro_map.show()
 
-
-# In[13]:
-
-
 choro_map = px.choropleth(train, locations = "Region", locationmode = "country names", color = "Fatalities",
                                         hover_name = "Region", animation_frame = "Date")
 choro_map.update_layout(title_text = "Fatalities Across The Globe", title_x = 0.5,
                          geo = dict(showframe = False, showcoastlines = True))
 choro_map.show()
 
-
-# In[14]:
-
-
 df = train
-
-
-# In[15]:
-
 
 df_cc = df.pivot(index = "Region", columns = "Date", values ="ConfirmedCases")
 df_cc.head()
 
-
-# In[16]:
-
-
 df_fc = df.pivot(index = "Region" , columns = "Date", values = "Fatalities")
 df_fc.head()
-
-
-# In[17]:
 
 
 df_cc.to_csv("confirmed_cases.csv", encoding = "utf-8-sig")
@@ -174,60 +120,27 @@ df_fc.to_csv("Fatal_cases.csv", encoding = "utf-8-sig")
 
 # # Analyzing Confirmed Cases
 
-# In[18]:
-
-
-# In[19]:
-
-
 train.head()
-
-
-# In[20]:
-
 
 train = train.set_index("Id")
 train.head()
 
-
-# In[21]:
-
-
 train_india = train[train["Region"] == "India"]
 train_india
 
-
-# In[22]:
-
-
 train_india["ConfirmedCases"] = train_india["ConfirmedCases"].astype(int)
 train_india["Fatalities"] = train_india["Fatalities"].astype(int)
-
-
-# In[23]:
-
 
 train_india_size = int(len(train_india) * 0.75)
 val_india_size = len(train_india) - train_india_size
 print("Training size = {}".format(train_india_size))
 print("Validation size = {}".format(val_india_size))
 
-
-# In[24]:
-
-
 train_india_confirmed_cases = train_india[["ConfirmedCases"]]
 train_india_fatal_cases = train_india[["Fatalities"]]
 
 
-# In[25]:
-
-
 print(train_india_confirmed_cases, train_india_fatal_cases)
-
-
-# In[26]:
-
 
 plt.figure(figsize = (8, 8))
 x = np.arange(1, 116, 1)
@@ -241,33 +154,17 @@ plt.legend()
 
 # ## CONFIRMED CASES :
 
-# In[27]:
-
 
 len(train_india_confirmed_cases)
 
-
-# In[28]:
-
-
 train_india_confirmed_cases
-
-
-# In[29]:
-
 
 train_india_confirmed_cases_data = train_india_confirmed_cases.iloc[0:train_india_size]
 val_india_confirmed_cases_data = train_india_confirmed_cases.iloc[train_india_size : len(train_india_confirmed_cases)]
 
 
-# In[30]:
-
-
 print(len(train_india_confirmed_cases_data))
 print(len(val_india_confirmed_cases_data))
-
-
-# In[31]:
 
 
 scaler = MinMaxScaler(feature_range = (0,1))
@@ -286,21 +183,13 @@ def createDataset(train) :
     return x_train, y_train
 
 
-# In[32]:
-
-
 x_train, y_train = createDataset(train_india_confirmed_cases_data)
 x_val, y_val = createDataset(val_india_confirmed_cases_data)
 
 
-# In[33]:
-
 
 print(x_train.shape, y_train.shape)
 print(x_val.shape, y_val.shape)
-
-
-# In[34]:
 
 
 model = tf.keras.Sequential()
@@ -315,34 +204,18 @@ model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(units = 1))
 
 
-# In[35]:
-
 
 model.compile(tf.keras.optimizers.Adam(lr = 0.001), loss = "mean_squared_error")
 
 
-# In[36]:
-
-
 model.summary()
-
-
-# In[37]:
-
 
 EPOCHS = 200
 BATCH_SIZE = 1
 
-
-# In[38]:
-
-
 with tf.device("/device:GPU:0"):
   history = model.fit(x_train, y_train,epochs = EPOCHS, verbose = 1,
                      batch_size = BATCH_SIZE, validation_data = (x_val, y_val))
-
-
-# In[39]:
 
 
 x = np.arange(0, EPOCHS, 1)
@@ -354,10 +227,6 @@ plt.plot(x, history.history["loss"], label = "Training Loss")
 plt.plot(x, history.history["val_loss"], label = "Validation Loss")
 plt.grid(True)
 plt.legend()
-
-
-# In[40]:
-
 
 predicted_cases = model.predict(x_val)
 predicted_cases = scaler.inverse_transform(predicted_cases)
@@ -374,12 +243,10 @@ plt.grid("both")
 plt.show()
 
 
-# In[41]:
-
-
 """
 Saving model's topology
 """
+
 model_json = model.to_json()
 with open("model.json", "w") as json_file:
     json_file.write(model_json)
@@ -387,40 +254,25 @@ with open("model.json", "w") as json_file:
 """
 Saving model's weights
 """
+
 model.save_weights("model.h5")
 
 
 # # Fatalities :
 
-# In[42]:
-
-
 len(train_india_fatal_cases)
-
-
-# In[43]:
-
 
 train_india_fatal_cases_data = train_india_fatal_cases.iloc[0:train_india_size]
 val_india_fatal_cases_data = train_india_fatal_cases.iloc[train_india_size : len(train_india_fatal_cases)]
 
-
-# In[44]:
 
 
 print(len(train_india_fatal_cases_data))
 print(len(val_india_fatal_cases_data))
 
 
-# In[45]:
-
-
 x_train, y_train = createDataset(train_india_fatal_cases_data)
 x_val, y_val = createDataset(val_india_fatal_cases_data)
-
-
-# In[46]:
-
 
 print(x_train.shape, y_train.shape)
 print(x_val.shape, y_val.shape)
@@ -428,16 +280,9 @@ print(x_val.shape, y_val.shape)
 
 # Using the same model architecture to predict. Re-training the same model on Fatal cases.
 
-# In[47]:
-
-
 with tf.device("/device:GPU:0"):
   history = model.fit(x_train, y_train,epochs = EPOCHS, verbose = 1, batch_size = BATCH_SIZE,
                      validation_data = (x_val, y_val))
-
-
-# In[48]:
-
 
 x = np.arange(0, EPOCHS, 1)
 plt.figure(1, figsize = (20, 12))
@@ -449,8 +294,6 @@ plt.plot(x, history.history["val_loss"], label = "Validation Loss")
 plt.grid(True)
 plt.legend()
 
-
-# In[49]:
 
 
 predicted_cases = model.predict(x_val)
